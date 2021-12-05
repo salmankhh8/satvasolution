@@ -1,9 +1,16 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { countryNames } from './country'
-import Select from 'react-select'
 import BootstrapTable from 'react-bootstrap-table-next'
-
 import 'bootstrap/dist/css/bootstrap.min.css'
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.css'
+import paginationFactory from 'react-bootstrap-table2-paginator'
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css'
+import filterFactory, {textFilter} from 'react-bootstrap-table2-filter'
+import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css'
+import ToolkitProvider,{CSVExport} from 'react-bootstrap-table2-toolkit'
+import { react } from '@babel/types'
+
+
 
 const Register = () => {
 
@@ -20,6 +27,8 @@ const Register = () => {
         ZipCode: '',
         country: null
     })
+    
+    
     const [records, setRecords] = useState([])
     const handleInputChange = (e) => {
         const name = e.target.name
@@ -30,16 +39,33 @@ const Register = () => {
         e.preventDefault();
         const newRecord = { ...userInput, id: new Date().getTime().toString() }
         setRecords([...records, newRecord])
+        
     }
     console.log(records)
-
-const columns=[
-    {datafield: 'Firstname',text: 'First-Name'},
-    {datafield: 'phonenumber',text: 'Phonenumber'},
-    {datafield: 'email',text: 'Email'},
-    {datafield: 'Country',text: 'Country'}
-]
-
+    const columns = [
+        { dataField: 'Firstname', text: 'FirstName', sort: true, filter:textFilter() },
+        { dataField: 'email', text: 'Email', sort: true ,filter:textFilter() },
+        { dataField: 'phonenumber', text: 'Phone-Number', sort: true, filter:textFilter() },
+        { dataField: 'Country', text: 'Country',sort: true, filter:textFilter() }
+    ]
+    const pagination = paginationFactory({
+        page: 1,
+        sizePerPage: 10,
+        lastPageText: ">>",
+        firstPageText: "<<",
+        nextPageText: ">",
+        prePageText: "<",
+        showTotal: true,
+        alwaysShowAllBtns: true,
+        onPageChange: function (page, sizePerPage) {
+            console.log('page', page);
+            console.log('sizePerPage', sizePerPage);
+        },
+        onSizePerPageChange: function (page, sizePerPage) {
+            console.log('page', page);
+            console.log('sizePerPage', sizePerPage);
+        }
+    })
     return (
         <div >
             <div className='user_form'>
@@ -104,31 +130,15 @@ const columns=[
             </div>
 
             <div>
-                <thead>
-                    <tr>
-                        <th>Full Name</th>
-                        <th>phonenumber</th>
-                        <th>Email</th>
-                        <th>country</th>
-                    </tr>
-                </thead>
-                {
- records.map((curElem) => {
-     return (
-         <div>
-         <tbody>
-             <tr>
-                 <td> <p>{curElem.Firstname}</p></td>
-                 <td> <p>{curElem.phonenumber}</p></td>
-                 <td> <p>{curElem.email}</p></td>
-                 <td> <p>{curElem.Country}</p></td>
-             </tr>
-          </tbody>
-     </div>             )
-                    })
-                }
+                <BootstrapTable
+                    bootstrap4
+                    keyField='id'
+                    columns={columns}
+                    data={records}
+                    pagination={pagination}
+                    filter={filterFactory()}
+                />
             </div>
-
 
         </div>
     )
