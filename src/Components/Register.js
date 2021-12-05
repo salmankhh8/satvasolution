@@ -7,9 +7,16 @@ import paginationFactory from 'react-bootstrap-table2-paginator'
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css'
 import filterFactory, {textFilter} from 'react-bootstrap-table2-filter'
 import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css'
-import ToolkitProvider,{CSVExport} from 'react-bootstrap-table2-toolkit'
-import { react } from '@babel/types'
 
+const getLocalItems=()=>{
+    let list=localStorage.getItem('lists')
+    if(list){
+        return JSON.parse(localStorage.getItem('lists'))
+    }
+    else{
+        return []; 
+    }
+}
 
 
 const Register = () => {
@@ -29,7 +36,8 @@ const Register = () => {
     })
     
     
-    const [records, setRecords] = useState([])
+    
+    const [records, setRecords] = useState(getLocalItems())
     const handleInputChange = (e) => {
         const name = e.target.name
         const value = e.target.value
@@ -48,6 +56,10 @@ const Register = () => {
         { dataField: 'phonenumber', text: 'Phone-Number', sort: true, filter:textFilter() },
         { dataField: 'Country', text: 'Country',sort: true, filter:textFilter() }
     ]
+    useEffect(()=>{
+        localStorage.setItem('lists', JSON.stringify(records))
+
+    },[records])
     const pagination = paginationFactory({
         page: 1,
         sizePerPage: 10,
